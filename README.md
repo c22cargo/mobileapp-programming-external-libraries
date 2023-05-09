@@ -1,42 +1,110 @@
 
 # Rapport
 
-**Skriv din rapport här!**
+Först lades en dependency till inuti gradle filen.
 
-_Du kan ta bort all text som finns sedan tidigare_.
+Koden ser ut som följande:
 
-## Följande grundsyn gäller dugga-svar:
+````
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+````
 
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
+Sedan lades en ny klass till "Car". En bil kan ha 4 olika attribut, som visas nedanför.
 
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
+Koden ser ut som följande:
 
-```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+````
+public class Car {
+    private int weight;
+    private int horsepower;
+
+    private String color;
+    private String brand;
+
+    public Car(int weight, int horsepower, String color, String brand) {
+        this.weight = weight;
+        this.horsepower = horsepower;
+        this.color = color;
+        this.brand = brand;
     }
 }
-```
+````
 
-Bilder läggs i samma mapp som markdown-filen.
+Sedan lades en TextView och en Button till inuti "activity_main.xml".
 
-![](android.png)
+Koden ser ut som följande:
 
-Läs gärna:
+````
+<TextView
+    android:id="@+id/show"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="200dp"
+    android:text="Press the button"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.
+<Button
+    android:id="@+id/newCarButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="New Car"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/show" />
+````
+
+Sedan lades funktionalitet till för knappen och TextViewen. När knappen klickas på konverteras
+1 av 4 olika bilar till en JSON sträng som sedan visas i TextViewen.
+Detta görs genom att använda en ArrayList med 4 olika bilar, och genom att använda GSON för att konvertera bilarna till JSON strängar.
+
+Koden ser ut som följande:
+
+````
+public class MainActivity extends AppCompatActivity {
+
+    private TextView show;
+
+    private ArrayList cars;
+
+    private int count = 0;
+
+    private Gson gson = new Gson();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        cars = new ArrayList<Car>();
+        cars.add(new Car(2000, 200, "Red", "Audi"));
+        cars.add(new Car(2100, 210, "Blue", "Volvo"));
+        cars.add(new Car(2200, 220, "Yellow", "BMW"));
+        cars.add(new Car(2300, 230, "Green", "Toyota"));
+        show = findViewById(R.id.show);
+        Button newCarButton = findViewById(R.id.newCarButton);
+        newCarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String json = gson.toJson(cars.get(count));
+                show.setText(json);
+                count++;
+
+                if (count == 4){
+                    count = 0;
+                }
+            }
+        });
+    }
+}
+````
+
+Appen ser ut som följande:
+
+![](bild.png)
+
